@@ -8,9 +8,9 @@ def data_retrieval(url: str) -> dict:
     return data
 
 
-def time_retrieval(data: dict) -> int:
-    unix_time = data.pop('%LAST_UPDATE%')
-    data.pop('%LAST_UPDATE_F%')
+def pop_unix_time_from_dict(data: dict) -> int:
+    unix_time = data.pop('%LAST_UPDATE%', None)
+    data.pop('%LAST_UPDATE_F%', None)
     return unix_time
 
 
