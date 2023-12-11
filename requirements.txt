@@ -3,3 +3,5 @@ numpy
 duckdb
 fastapi
 requests
+pytest
+uvicorn

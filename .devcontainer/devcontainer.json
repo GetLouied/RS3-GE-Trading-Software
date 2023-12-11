@@ -41,7 +41,9 @@
 						"IPython",
 						"--no-autoindent"
 					],
+					
 					"languageServer": "Pylance",
+					"PYTHONPATH": "${containerWorkspaceFolder}",
 					"defaultInterpreterPath": "/usr/local/bin/python",
 					"linting.enabled": true,
 					"editor.formatOnSave": true
@@ -81,7 +83,8 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"njpwerner.autodocstring",
-				"VisualStudioExptTeam.vscodeintellicode"
+				"VisualStudioExptTeam.vscodeintellicode",
+				"MS-vsliveshare.vsliveshare"
 			]
 		}
 	},
