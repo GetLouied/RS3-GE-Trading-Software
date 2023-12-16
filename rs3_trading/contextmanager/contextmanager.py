@@ -7,7 +7,7 @@ class DuckDBCM:
         self.connection = duckdb.connect(self.file_name)
 
     def __enter__(self):
-        return self.connection.con()
+        return self.connection.cursor()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.commit()
