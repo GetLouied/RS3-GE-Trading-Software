@@ -1,8 +1,8 @@
-import duckdb
 import pandas as pd
 import requests
 from duckdb import DuckDBPyConnection
 
+from rs3_trading.contextmanager.contextmanager import DuckDBCM
 from rs3_trading.database.ge_tick_database import create_price_table, create_volume_table, insert_into_table
 from rs3_trading.utils.database_util import RS3TableBuilder
 from rs3_trading.utils.url_utils import RSDataType
@@ -32,35 +32,33 @@ def transform_to_dataframe(data: dict, unix_time: int, column_name: str) -> pd.D
 
 
 def create_database():
-    con = duckdb.connect(DATABASE_NAME)
-    create_price_table(con)
-    create_volume_table(con)
-    con.close()
+    with DuckDBCM(file_name=DATABASE_NAME) as con:
+        create_price_table(con)
+        create_volume_table(con)
 
 
 def most_recent_database_update_time() -> int:
-    con = duckdb.connect(DATABASE_NAME)
-    most_recent_time = con.execute('select max(time) as time from rs3_price_data').df().fillna(pd.to_datetime(0)).time[0].timestamp()
-    con.close()
+    with DuckDBCM(file_name=DATABASE_NAME) as con:
+        most_recent_time = con.execute('select max(time) as time from rs3_price_data').df().fillna(pd.to_datetime(0)).time[0].timestamp()
+
     return int(most_recent_time)
 
 
 def update_database(url_price: str, url_volume: str):
     print("Updating database...")
-    con = duckdb.connect(DATABASE_NAME)
-    most_recent_time = most_recent_database_update_time()
+    with DuckDBCM(file_name=DATABASE_NAME) as con:
 
-    price_data = data_retrieval(url_price)
-    unix_time_price = pop_unix_time_from_dict(price_data)
+        most_recent_time = most_recent_database_update_time()
 
-    update_prices(con, most_recent_time, price_data, unix_time_price)
+        price_data = data_retrieval(url_price)
+        unix_time_price = pop_unix_time_from_dict(price_data)
 
-    volume_data = data_retrieval(url_volume)
-    unix_time_volume = pop_unix_time_from_dict(volume_data)
+        update_prices(con, most_recent_time, price_data, unix_time_price)
 
-    update_volumes(con, most_recent_time, volume_data, unix_time_volume)
+        volume_data = data_retrieval(url_volume)
+        unix_time_volume = pop_unix_time_from_dict(volume_data)
 
-    con.close()
+        update_volumes(con, most_recent_time, volume_data, unix_time_volume)
 
 
 def update_volumes(con: DuckDBPyConnection, most_recent_time: int, volume_data: pd.DataFrame, unix_time_volume: int):
