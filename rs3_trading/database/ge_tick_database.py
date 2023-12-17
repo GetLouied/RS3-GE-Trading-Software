@@ -1,17 +1,20 @@
-import duckdb
-
-con = duckdb.connect('GETest')
-
-
-def create_ge_tick_table(con):
-    con.execute('create table if not exists ge_tick_data(time datetime, item varchar, item_name varchar, price long)')
+import pandas as pd
+from duckdb import DuckDBPyConnection
 
 
-def insert_into_tick_table(con, data):
-    con.execute("""insert into ge_tick_data(time, item, item_name, price)
+def create_price_table(con: DuckDBPyConnection):
+    con.execute('create table if not exists rs3_price_data(time datetime, item varchar, item_name varchar, price long, primary key(item, time))')
+
+
+def create_volume_table(con: DuckDBPyConnection):
+    con.execute('create table if not exists rs3_volume_data(time datetime, item varchar, item_name varchar, volume long, primary key(item, time))')
+
+
+def insert_into_table(con: DuckDBPyConnection, table_name: str, column_names: list, dataframe: pd.DataFrame):
+    con.execute("""insert into {table_name}({column_names})
             select
                 time,
                 item,
                 item_name,
                 price
-            from ge_tick_dataframe""")
+            from {dataframe}""")
