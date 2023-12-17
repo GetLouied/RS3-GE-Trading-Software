@@ -1,7 +1,7 @@
 BASE_GE_DATABASE_NAME = r'rs3_{trading_data_type}_data'
 
 
-class RS3TABLEDATATYPE:
+class RS3TableDataType:
     Prices = 'price'
     Volumes = 'volume'
 

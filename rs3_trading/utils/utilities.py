@@ -4,7 +4,7 @@ from duckdb import DuckDBPyConnection
 
 from rs3_trading.contextmanager.contextmanager import DuckDBCM
 from rs3_trading.database.ge_tick_database import create_price_table, create_volume_table, insert_into_table
-from rs3_trading.utils.database_util import RS3TABLEDATATYPE, RS3TableNameBuilder
+from rs3_trading.utils.database_util import RS3TableDataType, RS3TableNameBuilder
 
 DATABASE_NAME = 'GE_Tick_Data.db'
 
@@ -66,9 +66,9 @@ def update_volumes(con: DuckDBPyConnection, most_recent_time: int, volume_data: 
         return
 
     ge_tick_dataframe_volume = transform_to_dataframe(volume_data, unix_time_volume, 'volume')
-    rs_name_builder = RS3TableNameBuilder()
-    rs3_volume_table_name = rs_name_builder(RS3TABLEDATATYPE.Volumes)
-    rs3_volume_column_names = ['datetime_utc', 'item', 'item_name', 'volume']
+    rs_volume_table = RS3TableNameBuilder()
+    rs3_volume_table_name = rs_volume_table(RS3TableDataType.Volumes)
+    rs3_volume_column_names = join_with_commas(['datetime_utc', 'item', 'item_name', 'volume'])
     insert_into_table(con, rs3_volume_table_name, rs3_volume_column_names, ge_tick_dataframe_volume)
 
 
@@ -78,7 +78,11 @@ def update_prices(con: DuckDBPyConnection, most_recent_time: int, price_data: pd
         return
 
     ge_tick_dataframe_price = transform_to_dataframe(price_data, unix_time_price, 'price')
-    rs_name_builder = RS3TableNameBuilder()
-    rs3_price_table_name = rs_name_builder(RS3TABLEDATATYPE.Prices)
-    rs3_price_column_names = ['datetime_utc', 'item', 'item_name', 'price']
+    rs_price_table = RS3TableNameBuilder()
+    rs3_price_table_name = rs_price_table(RS3TableDataType.Prices)
+    rs3_price_column_names = join_with_commas(['datetime_utc', 'item', 'item_name', 'price'])
     insert_into_table(con, rs3_price_table_name, rs3_price_column_names, ge_tick_dataframe_price)
+
+
+def join_with_commas(list: list):
+    return ", ".join(list)
