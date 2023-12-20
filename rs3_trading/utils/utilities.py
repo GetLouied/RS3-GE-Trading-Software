@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from duckdb import DuckDBPyConnection
 
-from rs3_trading.contextmanager.contextmanager import DuckDBCM
+from rs3_trading.database.dbcm import DuckDBCM
 from rs3_trading.database.ge_tick_database import create_price_table, create_volume_table, insert_into_table
 from rs3_trading.utils.database_util import RS3TableDataType, RS3TableNameBuilder
 

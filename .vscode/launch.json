@@ -1,0 +1,33 @@
+{
+
+    "version": "0.2.0",
+
+    "configurations": [
+
+        {
+
+            "justMyCode": true,
+
+            "name": "Run Python file",
+
+            "type": "python",
+
+            "request": "launch",
+
+            "program": "${file}",
+
+            "console": "integratedTerminal",
+
+            "cwd": "${workspaceFolder}",
+
+            "env": {
+
+                "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+
+            }
+
+        }
+
+    ]
+
+}
