@@ -3,7 +3,13 @@ import requests
 from duckdb import DuckDBPyConnection
 
 from rs3_trading.database.dbcm import DuckDBCM
-from rs3_trading.database.ge_tick_database import create_price_table, create_volume_table, insert_into_table
+from rs3_trading.database.ge_tick_database import (
+    create_historical_data_table,
+    create_id_item_name_table,
+    create_price_table,
+    create_volume_table,
+    insert_into_table,
+)
 from rs3_trading.utils.database_util import RS3TableDataType, RS3TableNameBuilder
 
 DATABASE_NAME = 'GE_Tick_Data.db'
@@ -34,6 +40,8 @@ def create_database():
     with DuckDBCM(file_name=DATABASE_NAME) as con:
         create_price_table(con)
         create_volume_table(con)
+        create_historical_data_table(con)
+        create_id_item_name_table(con)
 
 
 def most_recent_database_update_time() -> int:

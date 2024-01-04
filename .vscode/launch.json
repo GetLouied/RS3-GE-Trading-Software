@@ -6,7 +6,7 @@
 
         {
 
-            "justMyCode": true,
+            "justMyCode": false,
 
             "name": "Run Python file",
 
