@@ -36,7 +36,7 @@ def transform_to_dataframe(data: dict, unix_time: int, column_name: str) -> pd.D
     return ge_tick_dataframe
 
 
-def create_database():
+def create_database_tables():
     with DuckDBCM(file_name=DATABASE_NAME) as con:
         create_price_table(con)
         create_volume_table(con)

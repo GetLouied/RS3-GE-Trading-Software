@@ -12,23 +12,18 @@ import requests
 from rs3_trading.database.dbcm import DuckDBCM
 from rs3_trading.historicaldata.historical_utils import extract_item_name_from_table, historical_data_transformation
 from rs3_trading.historicaldata.request_errors import check_request_status, NotFoundError, RequestTimeoutError, TooManyRequestsError
-from rs3_trading.utils.utilities import create_database, insert_into_table, join_with_commas
+from rs3_trading.utils.utilities import create_database_tables, insert_into_table, join_with_commas
 
-DATABASE_NAME = 'GE_Tick_Data.db'
-COLUMN_NAME_ITEM_NAME = 'item_name'
 LOG_FILE = 'historicaldata_log.log'
-
-BATCH_SIZE = 5
 
 API_URL = 'https://api.weirdgloop.org/exchange/history/rs/last90d?name='
 
 
-
-query_string = f'select {COLUMN_NAME_ITEM_NAME} from rs3_price_data'
+query_string = 'select item_name from rs3_price_data'
 logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
-item_names: deque = extract_item_name_from_table(query_string, DATABASE_NAME)
-create_database()
+item_names: deque = extract_item_name_from_table(query_string, 'GE_Tick_Data.db')
+create_database_tables()
 
 
 async def task_query_rs_api_for_item(item_name: str) -> pd.DataFrame:
@@ -58,14 +53,11 @@ def batch_tasks(tasks: Iterable[Coroutine[Any, Any, Any]], batch_size: int):
         yield tasks[index:min(index + batch_size, length)]
 
 
-
-
-
-async def main():
+async def main(database_name: str, batch_size: int) -> None:
 
     task_set = list(map(task_query_rs_api_for_item, item_names))
     count = 0
-    for batch in batch_tasks(task_set, BATCH_SIZE):
+    for batch in batch_tasks(task_set, batch_size):
         try:
             results: pd.DataFrame = pd.concat(await asyncio.gather(*batch))
 
@@ -78,17 +70,14 @@ async def main():
         except RequestTimeoutError as e:
             logging.error(f'RequestTimeoutError: {str(e)}')
 
-        for _ in range(BATCH_SIZE):
+        for _ in range(batch_size):
             item_names.popleft()
 
-        with DuckDBCM(DATABASE_NAME) as con:
+        with DuckDBCM(database_name) as con:
             columns = list(results.columns)
             columns_str = join_with_commas(columns)
             insert_into_table(con, 'rs3_historical_data', columns_str, results)
 
-        count += BATCH_SIZE
+        count += batch_size
         print(f'Processed {count} requests.')
         sleep(20)
-
-
-
