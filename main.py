@@ -2,6 +2,7 @@ import threading
 
 import uvicorn
 from fastapi import FastAPI
+from rs3_trading.routers.items import router as items_router
 
 from rs3_trading.tasks.tasks import update_database_task
 from rs3_trading.utils.url_utils import RS3UrlBuilder, RSDataType
@@ -17,8 +18,11 @@ create_database()
 
 if __name__ == "__main__":
 
-    update_database_task(url_price, url_volume, 1800)
-    database_thread = threading.Thread(target=update_database_task)
+    database_thread = threading.Thread(target=update_database_task, kwargs={'url_price': url_price, 'url_volume': url_volume, 'update_delay': 1800})
     database_thread.start()
 
-    uvicorn.run("main:app", reload=True)
+    app.include_router(items_router)
+
+    uvicorn.run(app)
+
+
