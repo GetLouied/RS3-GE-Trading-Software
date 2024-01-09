@@ -12,5 +12,5 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 ARG USERNAME=vscode
 
-ENV HOME /home/vscode
+ENV HOME /home/${USERNAME}
 ENV SHELL /bin/bash
