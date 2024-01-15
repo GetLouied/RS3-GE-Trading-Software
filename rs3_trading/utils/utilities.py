@@ -32,6 +32,7 @@ def transform_to_dataframe(data: dict, unix_time: int, column_name: str) -> pd.D
     ge_tick_dataframe = pd.DataFrame.from_dict(data, orient='index').reset_index()
     ge_tick_dataframe.columns = column_names
     ge_tick_dataframe['datetime_utc'] = pd.to_datetime(unix_time, unit='s')
+    ge_tick_dataframe['updated_date'] = ge_tick_dataframe['datetime_utc'].dt.date
     ge_tick_dataframe['item'] = ge_tick_dataframe['item_name'].str.lower().replace('[^A-Za-z0-9+()]+', '', regex=True)
     return ge_tick_dataframe
 

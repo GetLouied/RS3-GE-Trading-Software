@@ -5,11 +5,15 @@ ARG VARIANT="3.11"
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
 ARG DEBIAN_FRONTEND=noninteractive
+COPY . .
+RUN pip3 install -r requirements.txt
 
 RUN git config --global user.name "Louis DeRienzo"
 RUN git config --global user.email "DeRienzo_louis@yahoo.com"
 
 ARG USERNAME=vscode
 
-ENV HOME /home/${USERNAME}
+ENV HOME /home/vscode
 ENV SHELL /bin/bash
+
+CMD [ "python3", "main.py"]
