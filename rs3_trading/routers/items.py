@@ -1,24 +1,19 @@
 from fastapi.routing import APIRouter
 from rs3_trading.contextmanager.contextmanager import DuckDBCM
 from fastapi.responses import JSONResponse
-from rs3_trading.utils.utilities import get_normalized_items
-import pandas as pd
 
 router = APIRouter(prefix='/item')
-
-item_name = get_normalized_items()
 
 @router.get('/all')
 def get_all_items():
     with DuckDBCM('GE_Tick_Data.db') as con:
-        df = con.execute('''select distinct item_name
-                    from rs3_price_data''').df()
+        df = con.execute('''
+                         select 
+                            distinct item_name,
+                            item as normalized_item_name
+                        from rs3_price_data''').df()
         
-        item_names = df['item_name'].tolist()
-        json_items_content = {'item_name': item_names}
-
-        
-        return JSONResponse(content=json_items_content)
+        return JSONResponse(content=df.to_dict(orient='records'))
     
 
 @router.get('/{item_name}')

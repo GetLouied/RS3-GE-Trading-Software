@@ -87,10 +87,3 @@ def update_prices(con: DuckDBPyConnection, most_recent_time: int, price_data: pd
 
 def join_with_commas(list: list):
     return ", ".join(list)
-
-
-def get_normalized_items():
-    with DuckDBCM(file_name=DATABASE_NAME) as con:
-        df = con.execute('select distinct item from rs3_price_data').df()
-        items = df['item'].tolist()
-        return items
