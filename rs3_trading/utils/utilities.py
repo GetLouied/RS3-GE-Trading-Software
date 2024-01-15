@@ -26,6 +26,7 @@ def transform_to_dataframe(data: dict, unix_time: int, column_name: str) -> pd.D
     ge_tick_dataframe = pd.DataFrame.from_dict(data, orient='index').reset_index()
     ge_tick_dataframe.columns = column_names
     ge_tick_dataframe['datetime_utc'] = pd.to_datetime(unix_time, unit='s')
+    ge_tick_dataframe['updated_date'] = ge_tick_dataframe['datetime_utc'].dt.date
     ge_tick_dataframe['item'] = ge_tick_dataframe['item_name'].str.lower().replace('[^A-Za-z0-9+()]+', '', regex=True)
     return ge_tick_dataframe
 
@@ -86,3 +87,10 @@ def update_prices(con: DuckDBPyConnection, most_recent_time: int, price_data: pd
 
 def join_with_commas(list: list):
     return ", ".join(list)
+
+
+def get_normalized_items():
+    with DuckDBCM(file_name=DATABASE_NAME) as con:
+        df = con.execute('select distinct item from rs3_price_data').df()
+        items = df['item'].tolist()
+        return items
