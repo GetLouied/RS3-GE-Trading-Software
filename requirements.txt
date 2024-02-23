@@ -6,3 +6,4 @@ requests
 pytest
 uvicorn
 asyncio
+pytest

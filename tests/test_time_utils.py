@@ -1,3 +1,4 @@
+import pytest
 from rs3_trading.utils.utilities import pop_unix_time_from_dict
 
 ## Name Format: Test_<function>_when_<condition>_return_<result>
@@ -38,3 +39,6 @@ def test_pop_unix_time_from_dict_when_empty_dict():
     result = pop_unix_time_from_dict(input_dict)
 
     assert result is None
+
+if __name__ == "__main__":
+    pytest.main()
